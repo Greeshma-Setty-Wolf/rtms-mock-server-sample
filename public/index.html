@@ -55,6 +55,7 @@
                     <button class="tab-button active" data-tab="transcripts">Transcripts</button>
                     <button class="tab-button" data-tab="logs">Logs</button>
                     <button class="tab-button" data-tab="mockws">Mock Data WS</button>
+                    <button class="tab-button" data-tab="meetingassist">Meeting Assistant</button>
                 </div>
 
                 <div id="transcripts-container" class="logs-container">
@@ -65,7 +66,127 @@
                     <div id="system-logs"></div>
                 </div>
 
-                <!-- ── Mock Data WS tester ───────────────────────────── -->
+                <!-- ── Meeting Assistant WS tester ──────────────────────── -->
+                <div id="meetingassist-container" class="logs-container" style="display:none;">
+
+                    <div style="font-size:0.75em;color:#aaa;margin-bottom:10px;line-height:1.5;">
+                        Mocks: <code style="color:#2d8cff;">wss://meeting-assistant…/subscribe?touchpoint={id}</code><br>
+                        Step 1 → authenticate &nbsp;|&nbsp; Step 2 → open WebSocket
+                    </div>
+
+                    <!-- Step 1: Auth -->
+                    <div style="background:#1e1e1e;border:1px solid #3d3d3d;border-radius:6px;
+                                padding:12px;margin-bottom:12px;">
+                        <div style="font-size:0.75em;font-weight:600;color:#aaa;
+                                    text-transform:uppercase;margin-bottom:10px;letter-spacing:0.05em;">
+                            Step 1 — Authenticate (POST /auth)
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                            <div>
+                                <label style="font-size:0.75em;color:#888;display:block;margin-bottom:3px;">client_id</label>
+                                <input id="ma-client-id" type="text" value="XkWfgHHASGOQC9b95AkIxB"
+                                    style="width:100%;box-sizing:border-box;background:#111;border:1px solid #3d3d3d;
+                                           color:#fff;border-radius:4px;padding:6px 8px;font-size:0.8em;" />
+                            </div>
+                            <div>
+                                <label style="font-size:0.75em;color:#888;display:block;margin-bottom:3px;">client_secret</label>
+                                <input id="ma-client-secret" type="password" value="YZnKVUufg7N18Oej6gHHqNWc7CG5jQ6N"
+                                    style="width:100%;box-sizing:border-box;background:#111;border:1px solid #3d3d3d;
+                                           color:#fff;border-radius:4px;padding:6px 8px;font-size:0.8em;" />
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <button id="ma-auth-btn"
+                                style="background:#2d8cff;color:#fff;border:none;border-radius:4px;
+                                       padding:7px 14px;cursor:pointer;font-size:0.85em;">
+                                Get Token
+                            </button>
+                            <span id="ma-token-status" style="font-size:0.75em;color:#555;">No token yet</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Subscribe -->
+                    <div style="background:#1e1e1e;border:1px solid #3d3d3d;border-radius:6px;
+                                padding:12px;margin-bottom:12px;">
+                        <div style="font-size:0.75em;font-weight:600;color:#aaa;
+                                    text-transform:uppercase;margin-bottom:10px;letter-spacing:0.05em;">
+                            Step 2 — Subscribe (WebSocket)
+                        </div>
+                        <div style="margin-bottom:8px;">
+                            <label style="font-size:0.75em;color:#888;display:block;margin-bottom:3px;">
+                                Server (host only)
+                            </label>
+                            <input id="ma-host" type="text" value="ws://localhost:9095"
+                                style="width:100%;box-sizing:border-box;background:#111;border:1px solid #3d3d3d;
+                                       color:#fff;border-radius:4px;padding:6px 8px;font-size:0.8em;" />
+                        </div>
+                        <div style="margin-bottom:8px;">
+                            <label style="font-size:0.75em;color:#888;display:block;margin-bottom:3px;">Touchpoint</label>
+                            <select id="ma-touchpoint"
+                                style="width:100%;box-sizing:border-box;background:#111;border:1px solid #3d3d3d;
+                                       color:#fff;border-radius:4px;padding:6px 8px;font-size:0.8em;">
+                                <option value="">— loading touchpoints… —</option>
+                            </select>
+                        </div>
+                        <div style="font-size:0.72em;color:#555;margin-bottom:8px;font-family:monospace;"
+                             id="ma-ws-url-preview">ws://localhost:9095/subscribe?touchpoint=…</div>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <button id="ma-connect-btn"
+                                style="flex:1;background:#3d3d3d;color:#aaa;border:none;border-radius:4px;
+                                       padding:8px 0;cursor:not-allowed;font-size:0.85em;" disabled>
+                                Connect
+                            </button>
+                            <button id="ma-disconnect-btn" disabled
+                                style="flex:1;background:#3d3d3d;color:#aaa;border:none;border-radius:4px;
+                                       padding:8px 0;cursor:not-allowed;font-size:0.85em;">
+                                Disconnect
+                            </button>
+                            <span id="ma-status-dot"
+                                style="width:10px;height:10px;border-radius:50%;background:#555;
+                                       flex-shrink:0;" title="Disconnected"></span>
+                        </div>
+                    </div>
+
+                    <!-- Calendar invite -->
+                    <div id="ma-invite-card" style="display:none;background:#1e2d40;border:1px solid #2d8cff;
+                         border-radius:6px;padding:12px;margin-bottom:12px;font-size:0.82em;line-height:1.6;">
+                        <div style="font-weight:600;color:#2d8cff;margin-bottom:6px;">
+                            📅 <span id="ma-invite-title"></span>
+                        </div>
+                        <div><span style="color:#aaa;">Start:</span> <span id="ma-invite-start"></span></div>
+                        <div><span style="color:#aaa;">End:</span>   <span id="ma-invite-end"></span></div>
+                        <div><span style="color:#aaa;">Organizer:</span> <span id="ma-invite-org"></span></div>
+                        <div><span style="color:#aaa;">Attendees:</span> <span id="ma-invite-att"></span></div>
+                        <div style="margin-top:6px;">
+                            <a id="ma-invite-url" href="#" target="_blank"
+                               style="color:#2d8cff;text-decoration:none;">🔗 Join Zoom Meeting</a>
+                        </div>
+                    </div>
+
+                    <!-- Session end badge -->
+                    <div id="ma-session-badge" style="display:none;font-size:0.75em;font-weight:600;
+                         text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;padding:4px 10px;
+                         border-radius:3px;background:#2a4a2a;color:#5fca5f;"></div>
+
+                    <!-- Transcript feed -->
+                    <div style="font-size:0.75em;color:#aaa;margin-bottom:6px;display:flex;justify-content:space-between;">
+                        <span>TRANSCRIPT</span>
+                        <span id="ma-line-count" style="color:#555;">0 lines</span>
+                    </div>
+                    <div id="ma-transcript"
+                        style="background:#111;border:1px solid #2a2a2a;border-radius:4px;padding:10px;
+                               height:280px;overflow-y:auto;font-size:0.82em;line-height:1.7;
+                               font-family:'SF Mono',Menlo,monospace;">
+                        <span style="color:#555;">Authenticate first, then connect…</span>
+                    </div>
+
+                    <!-- Raw log -->
+                    <div style="font-size:0.75em;color:#aaa;margin-top:10px;margin-bottom:6px;">RAW MESSAGES</div>
+                    <div id="ma-raw-log"
+                        style="background:#111;border:1px solid #2a2a2a;border-radius:4px;padding:10px;
+                               height:120px;overflow-y:auto;font-size:0.75em;line-height:1.5;
+                               font-family:'SF Mono',Menlo,monospace;color:#666;"></div>
+                </div>
                 <div id="mockws-container" class="logs-container" style="display: none;">
 
                     <div style="margin-bottom:12px;">
@@ -178,10 +299,15 @@
                         tabName === 'logs' ? 'block' : 'none';
                     document.getElementById('mockws-container').style.display =
                         tabName === 'mockws' ? 'block' : 'none';
+                    document.getElementById('meetingassist-container').style.display =
+                        tabName === 'meetingassist' ? 'block' : 'none';
 
-                    // Load meetings list on first open
+                    // Load data on first open
                     if (tabName === 'mockws' && !window._mwsMeetingsLoaded) {
                         loadMockMeetings();
+                    }
+                    if (tabName === 'meetingassist' && !window._maTouchpointsLoaded) {
+                        window.loadTouchpoints && window.loadTouchpoints();
                     }
                 });
             });

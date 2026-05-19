@@ -10,4 +10,13 @@ services:
       - ./data:/usr/src/app/data
     environment:
       - NODE_ENV=production
-    restart: unless-stopped 
+    restart: unless-stopped
+
+  mock-data-ws:
+    build: ./mock_data_ws
+    ports:
+      - "9095:9095"  # Mock data WebSocket + HTTP API
+    environment:
+      - PORT=9095
+      - NODE_ENV=production
+    restart: unless-stopped
