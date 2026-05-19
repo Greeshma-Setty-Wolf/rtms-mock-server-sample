@@ -1,0 +1,196 @@
+{
+  "calendar_invites": [
+    {
+      "id": "cal_invite_001",
+      "meeting_uuid": "TNhvT3WEBT6Srse3TgWRGr",
+      "ical_uid": "q2-product-planning-2026@zoom.us",
+      "title": "Q2 Product Planning",
+      "description": "Quarterly planning session to review Q1 OKRs and set direction for Q2. Please come prepared with your team's highlights and blockers.",
+      "location": "Zoom Meeting",
+      "start_time": "2026-05-19T09:00:00Z",
+      "end_time": "2026-05-19T10:00:00Z",
+      "timezone": "America/Los_Angeles",
+      "organizer": {
+        "name": "Alice Chen",
+        "email": "alice.chen@example.com"
+      },
+      "attendees": [
+        { "name": "Alice Chen", "email": "alice.chen@example.com", "status": "accepted", "required": true },
+        { "name": "Bob Martinez", "email": "bob.martinez@example.com", "status": "accepted", "required": true },
+        { "name": "Carol White", "email": "carol.white@example.com", "status": "accepted", "required": true },
+        { "name": "Dan Hoover", "email": "dan.hoover@example.com", "status": "tentative", "required": false }
+      ],
+      "recurrence": null,
+      "conference": {
+        "type": "zoom",
+        "join_url": "https://zoom.us/j/92345678901",
+        "meeting_id": "923 4567 8901",
+        "passcode": "Q2Plan"
+      },
+      "reminders": [
+        { "method": "popup", "minutes": 15 },
+        { "method": "email", "minutes": 60 }
+      ],
+      "status": "confirmed",
+      "created_at": "2026-05-12T08:00:00Z",
+      "updated_at": "2026-05-15T12:30:00Z"
+    },
+    {
+      "id": "cal_invite_002",
+      "meeting_uuid": "KLhvT3WEBT6Srse3TgWRGs",
+      "ical_uid": "eng-sprint-24-review-2026@zoom.us",
+      "title": "Engineering Sprint Review — Sprint 24",
+      "description": "Bi-weekly sprint review. Demo completed work, review velocity, and discuss any blockers. Sprint board: https://jira.example.com/sprint/24",
+      "location": "Zoom Meeting",
+      "start_time": "2026-05-19T14:00:00Z",
+      "end_time": "2026-05-19T15:00:00Z",
+      "timezone": "America/New_York",
+      "organizer": {
+        "name": "David Kim",
+        "email": "david.kim@example.com"
+      },
+      "attendees": [
+        { "name": "David Kim", "email": "david.kim@example.com", "status": "accepted", "required": true },
+        { "name": "Eva Patel", "email": "eva.patel@example.com", "status": "accepted", "required": true },
+        { "name": "Frank Liu", "email": "frank.liu@example.com", "status": "accepted", "required": true },
+        { "name": "Grace Nguyen", "email": "grace.nguyen@example.com", "status": "accepted", "required": true },
+        { "name": "Heidi Olsen", "email": "heidi.olsen@example.com", "status": "declined", "required": false }
+      ],
+      "recurrence": {
+        "frequency": "WEEKLY",
+        "interval": 2,
+        "days_of_week": ["MO"],
+        "until": "2026-12-31"
+      },
+      "conference": {
+        "type": "zoom",
+        "join_url": "https://zoom.us/j/81234567890",
+        "meeting_id": "812 3456 7890",
+        "passcode": "Sprint24"
+      },
+      "reminders": [
+        { "method": "popup", "minutes": 5 }
+      ],
+      "status": "confirmed",
+      "created_at": "2026-01-06T09:00:00Z",
+      "updated_at": "2026-05-18T10:00:00Z"
+    },
+    {
+      "id": "cal_invite_003",
+      "meeting_uuid": "PLhvT3WEBT6Srse3TgWRGt",
+      "ical_uid": "cs-qbr-q1-2026@zoom.us",
+      "title": "Customer Success — Quarterly Business Review Q1 2026",
+      "description": "QBR covering NPS trends, churn analysis, expansion opportunities, and risk account reviews.",
+      "location": "Zoom Meeting",
+      "start_time": "2026-05-20T10:00:00Z",
+      "end_time": "2026-05-20T11:30:00Z",
+      "timezone": "America/Chicago",
+      "organizer": {
+        "name": "Hannah Brooks",
+        "email": "hannah.brooks@example.com"
+      },
+      "attendees": [
+        { "name": "Hannah Brooks", "email": "hannah.brooks@example.com", "status": "accepted", "required": true },
+        { "name": "Ivan Torres", "email": "ivan.torres@example.com", "status": "accepted", "required": true },
+        { "name": "Julia Marsh", "email": "julia.marsh@example.com", "status": "accepted", "required": true },
+        { "name": "Kevin Sato", "email": "kevin.sato@example.com", "status": "tentative", "required": false },
+        { "name": "Laura Quinn", "email": "laura.quinn@example.com", "status": "accepted", "required": false }
+      ],
+      "recurrence": {
+        "frequency": "MONTHLY",
+        "interval": 3,
+        "until": "2027-12-31"
+      },
+      "conference": {
+        "type": "zoom",
+        "join_url": "https://zoom.us/j/71122334455",
+        "meeting_id": "711 2233 4455",
+        "passcode": "QBR2026"
+      },
+      "reminders": [
+        { "method": "popup", "minutes": 10 },
+        { "method": "email", "minutes": 1440 }
+      ],
+      "status": "confirmed",
+      "created_at": "2026-04-01T08:00:00Z",
+      "updated_at": "2026-05-17T14:00:00Z"
+    },
+    {
+      "id": "cal_invite_004",
+      "meeting_uuid": "QLhvT3WEBT6Srse3TgWRGu",
+      "ical_uid": "design-sync-weekly-2026@zoom.us",
+      "title": "Design Sync — Weekly",
+      "description": "Weekly design review and feedback session. Bring work-in-progress for critique and alignment.",
+      "location": "Zoom Meeting",
+      "start_time": "2026-05-21T11:00:00Z",
+      "end_time": "2026-05-21T11:30:00Z",
+      "timezone": "America/Los_Angeles",
+      "organizer": {
+        "name": "Mia Johnson",
+        "email": "mia.johnson@example.com"
+      },
+      "attendees": [
+        { "name": "Mia Johnson", "email": "mia.johnson@example.com", "status": "accepted", "required": true },
+        { "name": "Noah Brown", "email": "noah.brown@example.com", "status": "accepted", "required": true },
+        { "name": "Olivia Davis", "email": "olivia.davis@example.com", "status": "accepted", "required": false },
+        { "name": "Grace Nguyen", "email": "grace.nguyen@example.com", "status": "accepted", "required": false }
+      ],
+      "recurrence": {
+        "frequency": "WEEKLY",
+        "interval": 1,
+        "days_of_week": ["TH"],
+        "until": "2026-12-31"
+      },
+      "conference": {
+        "type": "zoom",
+        "join_url": "https://zoom.us/j/60011223344",
+        "meeting_id": "600 1122 3344",
+        "passcode": "Design"
+      },
+      "reminders": [
+        { "method": "popup", "minutes": 5 }
+      ],
+      "status": "confirmed",
+      "created_at": "2026-01-02T09:00:00Z",
+      "updated_at": "2026-05-14T09:00:00Z"
+    },
+    {
+      "id": "cal_invite_005",
+      "meeting_uuid": "RLhvT3WEBT6Srse3TgWRGv",
+      "ical_uid": "allhands-may-2026@zoom.us",
+      "title": "Company All-Hands — May 2026",
+      "description": "Monthly all-hands meeting. Agenda: company updates, Q2 priorities, new hire introductions, open Q&A.",
+      "location": "Zoom Webinar",
+      "start_time": "2026-05-27T17:00:00Z",
+      "end_time": "2026-05-27T18:00:00Z",
+      "timezone": "UTC",
+      "organizer": {
+        "name": "Patricia CEO",
+        "email": "patricia@example.com"
+      },
+      "attendees": [
+        { "name": "All Employees", "email": "all@example.com", "status": "accepted", "required": true }
+      ],
+      "recurrence": {
+        "frequency": "MONTHLY",
+        "interval": 1,
+        "days_of_week": ["WE"],
+        "week_of_month": -1,
+        "until": "2027-12-31"
+      },
+      "conference": {
+        "type": "zoom_webinar",
+        "join_url": "https://zoom.us/w/95566778899",
+        "meeting_id": "955 6677 8899",
+        "passcode": "AllHands"
+      },
+      "reminders": [
+        { "method": "popup", "minutes": 15 },
+        { "method": "email", "minutes": 2880 }
+      ],
+      "status": "confirmed",
+      "created_at": "2026-01-15T12:00:00Z",
+      "updated_at": "2026-05-20T08:00:00Z"
+    }
+  ]
+}

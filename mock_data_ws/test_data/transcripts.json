@@ -1,0 +1,257 @@
+{
+  "sessions": [
+    {
+      "meeting_uuid": "TNhvT3WEBT6Srse3TgWRGr",
+      "meeting_topic": "Q2 Product Planning",
+      "start_time": "2026-05-19T09:00:00Z",
+      "participants": [
+        { "user_id": 101, "display_name": "Alice Chen" },
+        { "user_id": 102, "display_name": "Bob Martinez" },
+        { "user_id": 103, "display_name": "Carol White" }
+      ],
+      "transcript_entries": [
+        {
+          "user_id": 101,
+          "display_name": "Alice Chen",
+          "language": "en-US",
+          "text": "Good morning everyone, let's get started with the Q2 planning session.",
+          "timestamp_ms": 5000,
+          "is_final": true
+        },
+        {
+          "user_id": 102,
+          "display_name": "Bob Martinez",
+          "language": "en-US",
+          "text": "Thanks Alice. I wanted to kick off with our OKR review from Q1.",
+          "timestamp_ms": 9000,
+          "is_final": true
+        },
+        {
+          "user_id": 103,
+          "display_name": "Carol White",
+          "language": "en-US",
+          "text": "Before we dive in, should we align on the agenda? I have a few items to add.",
+          "timestamp_ms": 14000,
+          "is_final": true
+        },
+        {
+          "user_id": 101,
+          "display_name": "Alice Chen",
+          "language": "en-US",
+          "text": "Sure Carol, go ahead and share your screen.",
+          "timestamp_ms": 18000,
+          "is_final": true
+        },
+        {
+          "user_id": 102,
+          "display_name": "Bob Martinez",
+          "language": "en-US",
+          "text": "We achieved 87% of our Q1 targets. The main gap was in the enterprise segment.",
+          "timestamp_ms": 25000,
+          "is_final": true
+        },
+        {
+          "user_id": 103,
+          "display_name": "Carol White",
+          "language": "en-US",
+          "text": "That tracks. I think we underestimated the sales cycle length for enterprise deals.",
+          "timestamp_ms": 32000,
+          "is_final": true
+        },
+        {
+          "user_id": 101,
+          "display_name": "Alice Chen",
+          "language": "en-US",
+          "text": "Agreed. For Q2, I propose we focus on three key initiatives: pipeline acceleration, product-led growth, and customer success expansion.",
+          "timestamp_ms": 40000,
+          "is_final": true
+        },
+        {
+          "user_id": 102,
+          "display_name": "Bob Martinez",
+          "language": "en-US",
+          "text": "Product-led growth is especially important given the new self-serve tier we're launching in June.",
+          "timestamp_ms": 48000,
+          "is_final": true
+        },
+        {
+          "user_id": 103,
+          "display_name": "Carol White",
+          "language": "en-US",
+          "text": "I'll own the customer success expansion track. We have 12 accounts ready for upsell conversations.",
+          "timestamp_ms": 55000,
+          "is_final": true
+        },
+        {
+          "user_id": 101,
+          "display_name": "Alice Chen",
+          "language": "en-US",
+          "text": "Perfect. Let's set a follow-up for next Friday to review the detailed plans from each owner.",
+          "timestamp_ms": 62000,
+          "is_final": true
+        }
+      ]
+    },
+    {
+      "meeting_uuid": "KLhvT3WEBT6Srse3TgWRGs",
+      "meeting_topic": "Engineering Sprint Review - Sprint 24",
+      "start_time": "2026-05-19T14:00:00Z",
+      "participants": [
+        { "user_id": 201, "display_name": "David Kim" },
+        { "user_id": 202, "display_name": "Eva Patel" },
+        { "user_id": 203, "display_name": "Frank Liu" },
+        { "user_id": 204, "display_name": "Grace Nguyen" }
+      ],
+      "transcript_entries": [
+        {
+          "user_id": 201,
+          "display_name": "David Kim",
+          "language": "en-US",
+          "text": "Welcome to Sprint 24 review. We completed 42 out of 48 story points this sprint.",
+          "timestamp_ms": 3000,
+          "is_final": true
+        },
+        {
+          "user_id": 202,
+          "display_name": "Eva Patel",
+          "language": "en-US",
+          "text": "The WebSocket refactor is done and deployed to staging. Performance improved by 35%.",
+          "timestamp_ms": 8000,
+          "is_final": true
+        },
+        {
+          "user_id": 203,
+          "display_name": "Frank Liu",
+          "language": "en-US",
+          "text": "The authentication service migration is 80% complete. We hit a dependency issue with the legacy token format.",
+          "timestamp_ms": 15000,
+          "is_final": true
+        },
+        {
+          "user_id": 204,
+          "display_name": "Grace Nguyen",
+          "language": "en-US",
+          "text": "On the frontend side, the new dashboard components are ready for QA. I'll share the Figma link in Slack.",
+          "timestamp_ms": 22000,
+          "is_final": true
+        },
+        {
+          "user_id": 201,
+          "display_name": "David Kim",
+          "language": "en-US",
+          "text": "Frank, what's the plan to unblock the token format issue?",
+          "timestamp_ms": 28000,
+          "is_final": true
+        },
+        {
+          "user_id": 203,
+          "display_name": "Frank Liu",
+          "language": "en-US",
+          "text": "I'm writing a compatibility shim. Should be ready by end of day tomorrow, then we can finish the migration in Sprint 25.",
+          "timestamp_ms": 34000,
+          "is_final": true
+        },
+        {
+          "user_id": 202,
+          "display_name": "Eva Patel",
+          "language": "en-US",
+          "text": "Also flagging — we need to update the API rate limiting logic before the enterprise launch. I can take that in Sprint 25.",
+          "timestamp_ms": 41000,
+          "is_final": true
+        },
+        {
+          "user_id": 204,
+          "display_name": "Grace Nguyen",
+          "language": "en-US",
+          "text": "The accessibility audit findings are in Jira. We have 4 critical items to address before beta.",
+          "timestamp_ms": 48000,
+          "is_final": true
+        },
+        {
+          "user_id": 201,
+          "display_name": "David Kim",
+          "language": "en-US",
+          "text": "Great progress everyone. I'll update the roadmap and sync with product this afternoon.",
+          "timestamp_ms": 54000,
+          "is_final": true
+        }
+      ]
+    },
+    {
+      "meeting_uuid": "PLhvT3WEBT6Srse3TgWRGt",
+      "meeting_topic": "Customer Success - Quarterly Business Review",
+      "start_time": "2026-05-20T10:00:00Z",
+      "participants": [
+        { "user_id": 301, "display_name": "Hannah Brooks" },
+        { "user_id": 302, "display_name": "Ivan Torres" },
+        { "user_id": 303, "display_name": "Julia Marsh" }
+      ],
+      "transcript_entries": [
+        {
+          "user_id": 301,
+          "display_name": "Hannah Brooks",
+          "language": "en-US",
+          "text": "Thanks for joining the QBR. Our NPS score this quarter was 72, up from 65 last quarter.",
+          "timestamp_ms": 4000,
+          "is_final": true
+        },
+        {
+          "user_id": 302,
+          "display_name": "Ivan Torres",
+          "language": "en-US",
+          "text": "That's great to hear. What were the main drivers of the improvement?",
+          "timestamp_ms": 9000,
+          "is_final": true
+        },
+        {
+          "user_id": 301,
+          "display_name": "Hannah Brooks",
+          "language": "en-US",
+          "text": "Faster support response times and the new onboarding flow we shipped in March were the biggest factors.",
+          "timestamp_ms": 15000,
+          "is_final": true
+        },
+        {
+          "user_id": 303,
+          "display_name": "Julia Marsh",
+          "language": "en-US",
+          "text": "We also had zero Sev-1 incidents in Q1, which customers really appreciated.",
+          "timestamp_ms": 21000,
+          "is_final": true
+        },
+        {
+          "user_id": 302,
+          "display_name": "Ivan Torres",
+          "language": "en-US",
+          "text": "Churn rate came down to 2.1% from 3.4%. The new health scoring model is working.",
+          "timestamp_ms": 28000,
+          "is_final": true
+        },
+        {
+          "user_id": 301,
+          "display_name": "Hannah Brooks",
+          "language": "en-US",
+          "text": "For Q2, the top risk accounts are Acme Corp and GlobalTech. Both are in renewal conversations.",
+          "timestamp_ms": 35000,
+          "is_final": true
+        },
+        {
+          "user_id": 303,
+          "display_name": "Julia Marsh",
+          "language": "en-US",
+          "text": "I'm scheduling exec alignment calls for both. We need to loop in Sales for GlobalTech — they have an expansion opportunity.",
+          "timestamp_ms": 43000,
+          "is_final": true
+        },
+        {
+          "user_id": 302,
+          "display_name": "Ivan Torres",
+          "language": "en-US",
+          "text": "Expansion pipeline looks strong — $1.2M in potential upsell identified across the book of business.",
+          "timestamp_ms": 50000,
+          "is_final": true
+        }
+      ]
+    }
+  ]
+}

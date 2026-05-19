@@ -54,6 +54,7 @@
                 <div class="log-tabs">
                     <button class="tab-button active" data-tab="transcripts">Transcripts</button>
                     <button class="tab-button" data-tab="logs">Logs</button>
+                    <button class="tab-button" data-tab="mockws">Mock Data WS</button>
                 </div>
 
                 <div id="transcripts-container" class="logs-container">
@@ -62,6 +63,85 @@
 
                 <div id="logs-container" class="logs-container" style="display: none;">
                     <div id="system-logs"></div>
+                </div>
+
+                <!-- ── Mock Data WS tester ───────────────────────────── -->
+                <div id="mockws-container" class="logs-container" style="display: none;">
+
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:0.8em;color:#aaa;display:block;margin-bottom:4px;">Server URL</label>
+                        <input id="mws-url" type="text" value="ws://localhost:9095/signaling"
+                            style="width:100%;box-sizing:border-box;background:#1a1a1a;border:1px solid #3d3d3d;
+                                   color:#fff;border-radius:4px;padding:7px 10px;font-size:0.85em;" />
+                    </div>
+
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:0.8em;color:#aaa;display:block;margin-bottom:4px;">Meeting</label>
+                        <select id="mws-meeting"
+                            style="width:100%;box-sizing:border-box;background:#1a1a1a;border:1px solid #3d3d3d;
+                                   color:#fff;border-radius:4px;padding:7px 10px;font-size:0.85em;">
+                            <option value="">— loading meetings… —</option>
+                        </select>
+                    </div>
+
+                    <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;">
+                        <button id="mws-connect-btn"
+                            style="flex:1;background:#2d8cff;color:#fff;border:none;border-radius:4px;
+                                   padding:8px 0;cursor:pointer;font-size:0.9em;">
+                            Connect
+                        </button>
+                        <button id="mws-disconnect-btn" disabled
+                            style="flex:1;background:#3d3d3d;color:#aaa;border:none;border-radius:4px;
+                                   padding:8px 0;cursor:not-allowed;font-size:0.9em;">
+                            Disconnect
+                        </button>
+                        <span id="mws-status-dot"
+                            style="width:10px;height:10px;border-radius:50%;background:#555;
+                                   flex-shrink:0;margin-left:4px;" title="Disconnected"></span>
+                    </div>
+
+                    <!-- Calendar invite card -->
+                    <div id="mws-invite-card" style="display:none;background:#1e2d40;border:1px solid #2d8cff;
+                         border-radius:6px;padding:12px;margin-bottom:14px;font-size:0.82em;line-height:1.6;">
+                        <div style="font-weight:600;color:#2d8cff;margin-bottom:6px;">
+                            📅 <span id="mws-invite-title"></span>
+                        </div>
+                        <div><span style="color:#aaa;">Start:</span> <span id="mws-invite-start"></span></div>
+                        <div><span style="color:#aaa;">End:</span>   <span id="mws-invite-end"></span></div>
+                        <div><span style="color:#aaa;">Organizer:</span> <span id="mws-invite-org"></span></div>
+                        <div><span style="color:#aaa;">Attendees:</span> <span id="mws-invite-att"></span></div>
+                        <div style="margin-top:6px;">
+                            <a id="mws-invite-url" href="#" target="_blank"
+                               style="color:#2d8cff;text-decoration:none;font-size:0.95em;">🔗 Join Zoom Meeting</a>
+                        </div>
+                    </div>
+
+                    <!-- Session state badge -->
+                    <div id="mws-session-badge" style="display:none;font-size:0.75em;font-weight:600;
+                         text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;padding:4px 10px;
+                         border-radius:3px;background:#2a4a2a;color:#5fca5f;">
+                        STARTED
+                    </div>
+
+                    <!-- Transcript feed -->
+                    <div style="font-size:0.75em;color:#aaa;margin-bottom:6px;display:flex;justify-content:space-between;">
+                        <span>TRANSCRIPT</span>
+                        <span id="mws-line-count" style="color:#555;">0 lines</span>
+                    </div>
+                    <div id="mws-transcript"
+                        style="background:#111;border:1px solid #2a2a2a;border-radius:4px;padding:10px;
+                               height:320px;overflow-y:auto;font-size:0.82em;line-height:1.7;
+                               font-family:'SF Mono',Menlo,monospace;">
+                        <span style="color:#555;">Waiting for connection…</span>
+                    </div>
+
+                    <!-- Raw message log -->
+                    <div style="font-size:0.75em;color:#aaa;margin-top:12px;margin-bottom:6px;">RAW MESSAGES</div>
+                    <div id="mws-raw-log"
+                        style="background:#111;border:1px solid #2a2a2a;border-radius:4px;padding:10px;
+                               height:140px;overflow-y:auto;font-size:0.75em;line-height:1.5;
+                               font-family:'SF Mono',Menlo,monospace;color:#666;">
+                    </div>
                 </div>
             </div>
         </div>
@@ -92,10 +172,17 @@
 
                     // Show/hide containers
                     const tabName = button.dataset.tab;
-                    document.getElementById('transcripts-container').style.display = 
+                    document.getElementById('transcripts-container').style.display =
                         tabName === 'transcripts' ? 'block' : 'none';
-                    document.getElementById('logs-container').style.display = 
+                    document.getElementById('logs-container').style.display =
                         tabName === 'logs' ? 'block' : 'none';
+                    document.getElementById('mockws-container').style.display =
+                        tabName === 'mockws' ? 'block' : 'none';
+
+                    // Load meetings list on first open
+                    if (tabName === 'mockws' && !window._mwsMeetingsLoaded) {
+                        loadMockMeetings();
+                    }
                 });
             });
 
@@ -116,6 +203,231 @@
                 entry.appendChild(content);
                 transcriptDiv.appendChild(entry);
             }
+        </script>
+
+        <!-- ── Mock Data WS tester logic ─────────────────────────── -->
+        <script>
+        (function () {
+            const HTTP_BASE  = 'http://localhost:9095';
+            let   _ws        = null;
+            let   _lineCount = 0;
+
+            // ── Populate meeting dropdown ──────────────────────────────────
+            window._mwsMeetingsLoaded = false;
+
+            window.loadMockMeetings = function loadMockMeetings() {
+                fetch(HTTP_BASE + '/meetings')
+                    .then(r => r.json())
+                    .then(data => {
+                        const sel = document.getElementById('mws-meeting');
+                        sel.innerHTML = '';
+                        data.meetings.forEach(m => {
+                            const opt = document.createElement('option');
+                            opt.value = m.meeting_uuid;
+                            opt.textContent = m.meeting_topic + ' — ' + m.meeting_uuid.slice(0, 10) + '…';
+                            sel.appendChild(opt);
+                        });
+                        window._mwsMeetingsLoaded = true;
+                        rawLog('ℹ Loaded ' + data.meetings.length + ' meetings from ' + HTTP_BASE);
+                    })
+                    .catch(() => {
+                        rawLog('⚠ Could not reach ' + HTTP_BASE + '/meetings — is the server running?');
+                    });
+            }
+
+            // ── Status dot helpers ─────────────────────────────────────────
+            function setStatus(state) {
+                const dot = document.getElementById('mws-status-dot');
+                const colors = { connected: '#5fca5f', connecting: '#f0a500', disconnected: '#555', error: '#e05252' };
+                dot.style.background = colors[state] || '#555';
+                dot.title = state.charAt(0).toUpperCase() + state.slice(1);
+            }
+
+            // ── Raw message log ────────────────────────────────────────────
+            function rawLog(line) {
+                const el  = document.getElementById('mws-raw-log');
+                const ts  = new Date().toLocaleTimeString();
+                el.innerHTML += `<div style="color:#666;">[${ts}] ${escHtml(line)}</div>`;
+                el.scrollTop = el.scrollHeight;
+            }
+
+            function escHtml(s) {
+                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            }
+
+            // ── Transcript feed ────────────────────────────────────────────
+            function appendTranscriptLine(name, text) {
+                const feed = document.getElementById('mws-transcript');
+                // Clear placeholder on first line
+                if (_lineCount === 0) feed.innerHTML = '';
+                _lineCount++;
+
+                const ts   = new Date().toLocaleTimeString();
+                const line = document.createElement('div');
+                line.style.cssText = 'margin-bottom:4px;';
+                line.innerHTML =
+                    `<span style="color:#555;">[${escHtml(ts)}]</span> ` +
+                    `<span style="color:#2d8cff;font-weight:600;">${escHtml(name)}:</span> ` +
+                    `<span style="color:#ddd;">${escHtml(text)}</span>`;
+                feed.appendChild(line);
+                feed.scrollTop = feed.scrollHeight;
+
+                document.getElementById('mws-line-count').textContent = _lineCount + ' line' + (_lineCount !== 1 ? 's' : '');
+            }
+
+            // ── Calendar invite card ───────────────────────────────────────
+            function showInvite(inv) {
+                document.getElementById('mws-invite-title').textContent = inv.title || '';
+                document.getElementById('mws-invite-start').textContent = inv.start_time || '';
+                document.getElementById('mws-invite-end').textContent   = inv.end_time   || '';
+                document.getElementById('mws-invite-org').textContent   =
+                    (inv.organizer ? inv.organizer.name + ' <' + inv.organizer.email + '>' : '');
+                document.getElementById('mws-invite-att').textContent   =
+                    (inv.attendees || []).map(a => a.name).join(', ');
+                const urlEl = document.getElementById('mws-invite-url');
+                if (inv.conference && inv.conference.join_url) {
+                    urlEl.href = inv.conference.join_url;
+                    urlEl.style.display = 'inline';
+                } else {
+                    urlEl.style.display = 'none';
+                }
+                document.getElementById('mws-invite-card').style.display = 'block';
+            }
+
+            // ── Session badge ──────────────────────────────────────────────
+            const STATE_LABEL = { 1:'STARTED', 2:'PAUSED', 3:'RESUMED', 4:'STOPPED' };
+            const STATE_COLOR  = {
+                1: { bg:'#2a4a2a', fg:'#5fca5f' },
+                2: { bg:'#4a3e1a', fg:'#f0c040' },
+                3: { bg:'#2a4a2a', fg:'#5fca5f' },
+                4: { bg:'#3a1a1a', fg:'#e05252' },
+            };
+            function showSessionBadge(state) {
+                const badge = document.getElementById('mws-session-badge');
+                const c     = STATE_COLOR[state] || { bg:'#333', fg:'#aaa' };
+                badge.textContent = STATE_LABEL[state] || 'UNKNOWN';
+                badge.style.background = c.bg;
+                badge.style.color      = c.fg;
+                badge.style.display    = 'inline-block';
+            }
+
+            // ── Connect ────────────────────────────────────────────────────
+            function connectMockWS() {
+                const url      = document.getElementById('mws-url').value.trim();
+                const uuid     = document.getElementById('mws-meeting').value;
+
+                if (!url || !uuid) { rawLog('⚠ Select a meeting and provide a server URL.'); return; }
+
+                // Reset UI
+                _lineCount = 0;
+                document.getElementById('mws-transcript').innerHTML =
+                    '<span style="color:#555;">Connecting…</span>';
+                document.getElementById('mws-line-count').textContent = '0 lines';
+                document.getElementById('mws-invite-card').style.display = 'none';
+                document.getElementById('mws-session-badge').style.display = 'none';
+                document.getElementById('mws-raw-log').innerHTML = '';
+
+                setStatus('connecting');
+                rawLog('→ Connecting to ' + url);
+
+                _ws = new WebSocket(url);
+
+                _ws.onopen = () => {
+                    setStatus('connected');
+                    rawLog('✓ Connected — sending handshake for ' + uuid);
+
+                    _ws.send(JSON.stringify({
+                        msg_type:       1,
+                        meeting_uuid:   uuid,
+                        rtms_stream_id: 'rtms_mock_ui_001',
+                        signature:      'mock-ui-' + Date.now(),
+                    }));
+
+                    document.getElementById('mws-connect-btn').disabled    = true;
+                    document.getElementById('mws-connect-btn').style.background = '#555';
+                    document.getElementById('mws-connect-btn').style.cursor = 'not-allowed';
+                    document.getElementById('mws-disconnect-btn').disabled  = false;
+                    document.getElementById('mws-disconnect-btn').style.background = '#c0392b';
+                    document.getElementById('mws-disconnect-btn').style.color      = '#fff';
+                    document.getElementById('mws-disconnect-btn').style.cursor     = 'pointer';
+                };
+
+                _ws.onmessage = (evt) => {
+                    let msg;
+                    try { msg = JSON.parse(evt.data); } catch { return; }
+
+                    rawLog('← msg_type=' + msg.msg_type + (msg.session_id ? ' session=' + msg.session_id : ''));
+
+                    switch (msg.msg_type) {
+                        case 2: // SIGNALING_HAND_SHAKE_RESP
+                            if (msg.status_code === 200) {
+                                rawLog('✓ Handshake OK — subscribing…');
+                                _ws.send(JSON.stringify({
+                                    msg_type:   5,
+                                    session_id: msg.session_id,
+                                    event_type: ['transcript', 'chat'],
+                                }));
+                            } else {
+                                rawLog('✗ Handshake failed: ' + msg.status_message);
+                                disconnectMockWS();
+                            }
+                            break;
+
+                        case 9: // SESSION_STATE_UPDATE
+                            showSessionBadge(msg.state);
+                            if (msg.state === 4) {
+                                rawLog('■ Session STOPPED — ' + (msg.stop_reason || ''));
+                                disconnectMockWS();
+                            }
+                            break;
+
+                        case 50: // CALENDAR_INVITE (custom)
+                            rawLog('📅 Calendar invite received: ' + (msg.content && msg.content.title));
+                            showInvite(msg.content);
+                            break;
+
+                        case 17: // MEDIA_DATA_TRANSCRIPT
+                            appendTranscriptLine(
+                                msg.content.display_name || ('User ' + msg.content.user_id),
+                                msg.content.data
+                            );
+                            break;
+
+                        case 12: // KEEP_ALIVE_REQ
+                            _ws.send(JSON.stringify({ msg_type: 13, session_id: msg.session_id, timestamp: Date.now() }));
+                            break;
+                    }
+                };
+
+                _ws.onerror = () => {
+                    setStatus('error');
+                    rawLog('✗ WebSocket error');
+                };
+
+                _ws.onclose = () => {
+                    setStatus('disconnected');
+                    rawLog('— Connection closed');
+                    resetConnectBtn();
+                };
+            }
+
+            // ── Disconnect ─────────────────────────────────────────────────
+            function disconnectMockWS() {
+                if (_ws) { _ws.close(); _ws = null; }
+                resetConnectBtn();
+            }
+
+            function resetConnectBtn() {
+                const c = document.getElementById('mws-connect-btn');
+                c.disabled = false; c.style.background = '#2d8cff'; c.style.cursor = 'pointer';
+                const d = document.getElementById('mws-disconnect-btn');
+                d.disabled = true; d.style.background = '#3d3d3d'; d.style.color = '#aaa'; d.style.cursor = 'not-allowed';
+            }
+
+            // ── Wire up buttons ────────────────────────────────────────────
+            document.getElementById('mws-connect-btn').addEventListener('click', connectMockWS);
+            document.getElementById('mws-disconnect-btn').addEventListener('click', disconnectMockWS);
+        })();
         </script>
     </body>
 </html>

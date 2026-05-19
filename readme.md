@@ -287,6 +287,98 @@ The media websocket will send you the following messages depending on which medi
 }
 ```
 
+---
+
+## Mock Data WebSocket (`mock_data_ws`)
+
+A self-contained WebSocket + HTTP server that replaces a live Zoom meeting with local test fixtures. Use it to develop and test transcript/calendar-invite consumers **without needing a real Zoom account or active meeting**.
+
+### What's inside
+
+```
+mock_data_ws/
+├── server.js                   ← Express + WebSocket server (port 9095)
+├── test_client.js              ← CLI tester
+├── package.json
+└── test_data/
+    ├── transcripts.json        ← 3 mock meeting transcript sessions (27 lines)
+    └── calendar_invites.json   ← 5 mock calendar invites
+```
+
+### Starting the server
+
+```bash
+cd mock_data_ws
+npm install
+npm start
+# Listening at http://localhost:9095  /  ws://localhost:9095/signaling
+```
+
+### HTTP endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/health` | Liveness check |
+| `GET` | `/meetings` | List available mock meeting UUIDs |
+| `GET` | `/transcripts` | All transcript sessions |
+| `GET` | `/transcripts/:meetingUuid` | Transcript for one meeting |
+| `GET` | `/calendar-invites` | All calendar invites |
+| `GET` | `/calendar-invites/:id` | Single invite by `id` or `meeting_uuid` |
+
+### WebSocket connection flow
+
+```
+Client                              Server (ws://localhost:9095/signaling)
+  │── SIGNALING_HAND_SHAKE_REQ ───▶ │  msg_type 1
+  │◀─ SIGNALING_HAND_SHAKE_RESP ─── │  msg_type 2  (status 200)
+  │◀─ SESSION_STATE_UPDATE ──────── │  msg_type 9  (STARTED)
+  │◀─ CALENDAR_INVITE ────────────── │  msg_type 50 (matching invite, if any)
+  │── EVENT_SUBSCRIPTION ──────────▶ │  msg_type 5
+  │◀─ EVENT_UPDATE ───────────────── │  msg_type 6  (subscription confirmed)
+  │◀─ MEDIA_DATA_TRANSCRIPT ──────── │  msg_type 17 (one per line, timed)
+       ...repeats until done...
+  │◀─ SESSION_STATE_UPDATE ──────── │  msg_type 9  (STOPPED)
+  │◀─ KEEP_ALIVE_REQ (every 10 s) ─ │  msg_type 12
+  │── KEEP_ALIVE_RESP ──────────────▶ │  msg_type 13
+```
+
+### Handshake message (client sends)
+
+```json
+{
+  "msg_type": 1,
+  "meeting_uuid": "TNhvT3WEBT6Srse3TgWRGr",
+  "rtms_stream_id": "rtms_mock_stream_001",
+  "signature": "<any-non-empty-string in mock mode>"
+}
+```
+
+### Available mock meetings
+
+| `meeting_uuid` | Topic |
+|----------------|-------|
+| `TNhvT3WEBT6Srse3TgWRGr` | Q2 Product Planning |
+| `KLhvT3WEBT6Srse3TgWRGs` | Engineering Sprint Review — Sprint 24 |
+| `PLhvT3WEBT6Srse3TgWRGt` | Customer Success — Quarterly Business Review |
+
+### CLI test client
+
+```bash
+# Test Q2 Planning meeting
+node test_client.js TNhvT3WEBT6Srse3TgWRGr
+
+# Test Engineering Sprint Review
+node test_client.js KLhvT3WEBT6Srse3TgWRGs
+```
+
+You will see the calendar invite pushed immediately, then transcript lines stream out with their original timing, exactly as Zoom RTMS would deliver them.
+
+### UI tester
+
+Open the main mock server UI at [http://localhost:9092](http://localhost:9092) and click the **"Mock Data WS"** tab in the sidebar. Select a meeting from the dropdown, click **Connect**, and watch the calendar invite and live transcript stream in your browser in real time.
+
+---
+
 ## License
 
 See LICENSE.md file for details.
