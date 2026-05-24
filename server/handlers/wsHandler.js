@@ -3,6 +3,8 @@ const WebSocketUtils = require('../utils/wsUtils');
 const SignalingHandler = require('./signalingHandler');
 const MediaHandler = require('./mediaHandler');
 const MESSAGE_TYPES = require('../constants/messageTypes');
+const EventStreamHandler = require('./eventStreamHandler');
+const TranscriptStreamHandler = require('./transcriptStreamHandler');
 
 class WSHandler {
     static setupWebSocketServer(server) {
@@ -19,6 +21,16 @@ class WSHandler {
 
         // Store logs server in global scope
         global.logsWss = logsWss;
+
+        // Meeting Assistant — lifecycle events WebSocket (/events)
+        const eventsWss = new WebSocket.Server({ noServer: true, clientTracking: true });
+        eventsWss.on('connection', (ws, req) => EventStreamHandler.handleConnection(ws, req));
+        global.eventsWss = eventsWss;
+
+        // Meeting Assistant — transcript stream WebSocket (/rtms-transcript)
+        const transcriptWss = new WebSocket.Server({ noServer: true, clientTracking: true });
+        transcriptWss.on('connection', (ws, req) => TranscriptStreamHandler.handleConnection(ws, req));
+        global.transcriptWss = transcriptWss;
 
         wss.on("connection", this.handleConnection);
         wss.on("error", this.handleError);
@@ -57,7 +69,17 @@ class WSHandler {
         WebSocketUtils.handleSocketError(socket);
         console.log("Upgrade request received for:", request.url);
 
-        if (request.url === "/logs") {
+        if (request.url === "/events") {
+            console.log("Handling /events upgrade");
+            global.eventsWss.handleUpgrade(request, socket, head, (ws) => {
+                global.eventsWss.emit("connection", ws, request);
+            });
+        } else if (request.url === "/rtms-transcript") {
+            console.log("Handling /rtms-transcript upgrade");
+            global.transcriptWss.handleUpgrade(request, socket, head, (ws) => {
+                global.transcriptWss.emit("connection", ws, request);
+            });
+        } else if (request.url === "/logs") {
             console.log("Handling logs upgrade");
             global.logsWss.handleUpgrade(request, socket, head, (ws) => {
                 global.logsWss.emit("connection", ws, request);

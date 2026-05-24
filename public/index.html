@@ -1,781 +1,143 @@
 <!doctype html>
-<html>
+<html lang="en">
     <head>
-        <title>Video Meeting</title>
-        <link rel="stylesheet" href="/css/styles.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Zoom Mock — Meeting Assistant</title>
+        <link rel="stylesheet" href="/css/styles.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     </head>
     <body>
-        <div class="container">
-            <div class="main-content">
-                <div class="meeting-header">
-                    <h2 class="meeting-title">RTMS Mock Server</h2>
+        <div class="app">
+
+            <!-- ── Top bar ─────────────────────────────────────────────── -->
+            <header class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-video"></i>
+                    Zoom Mock — Meeting Assistant
                 </div>
-
-                <div class="form-group">
-                    <div class="url-container">
-                        <label>Provide Webhook URL. To know more about Zoom Webhooks, visit <a href="https://developers.zoom.us/docs/api/webhooks/" target="_blank">here</a>.</label>
-
-                        <input type="text" id="webhookUrl" placeholder="Enter Webhook URL" />
-                        <button id="validateBtn">
-                            <i class="fas fa-check-circle"></i> Validate
-                        </button>
-                    </div>
+                <div class="connection-status">
+                    <span class="status-dot" id="events-dot" title="Events WS"></span>
+                    <span class="status-label">Events</span>
+                    <span class="status-dot" id="transcript-dot" title="Transcript WS"></span>
+                    <span class="status-label">Transcript</span>
                 </div>
+            </header>
 
-                <div class="video-container">
-                    <video id="mediaVideo" autoplay playsinline muted></video>
-                    <audio id="mediaAudio" autoplay></audio>
-                </div>
+            <!-- ── Main area ────────────────────────────────────────────── -->
+            <div class="app-body">
 
-                <div class="controls">
-                    <button id="sendBtn" disabled>
-                        <i class="fas fa-video"></i> Start Meeting
-                    </button>
-                    <button id="pauseBtn" disabled>
-                        <i class="fas fa-pause"></i> Pause RTMS
-                    </button>
-                    <button id="resumeBtn" disabled>
-                        <i class="fas fa-play"></i> Resume RTMS
-                    </button>
-                    <button id="stopBtn" disabled>
-                        <i class="fas fa-stop"></i> Stop RTMS
-                    </button>
-                    <button id="startRtmsBtn" disabled>
-                        <i class="fas fa-play-circle"></i> Start RTMS
-                    </button>
-                    <button id="endBtn" disabled>
-                        <i class="fas fa-phone-slash"></i> End Meeting
-                    </button>
-                </div>
-            </div>
+                <!-- LEFT: Setup panel -->
+                <aside class="setup-panel">
 
-            <div class="sidebar">
-                <div class="log-tabs">
-                    <button class="tab-button active" data-tab="transcripts">Transcripts</button>
-                    <button class="tab-button" data-tab="logs">Logs</button>
-                    <button class="tab-button" data-tab="mockws">Mock Data WS</button>
-                    <button class="tab-button" data-tab="meetingassist">Meeting Assistant</button>
-                </div>
-
-                <div id="transcripts-container" class="logs-container">
-                    <div id="transcript"></div>
-                </div>
-
-                <div id="logs-container" class="logs-container" style="display: none;">
-                    <div id="system-logs"></div>
-                </div>
-
-                <!-- ── Meeting Assistant WS tester ──────────────────────── -->
-                <div id="meetingassist-container" class="logs-container" style="display:none;">
-
-                    <div style="font-size:0.75em;color:#aaa;margin-bottom:10px;line-height:1.5;">
-                        Mocks: <code style="color:#2d8cff;">wss://meeting-assistant…/subscribe?touchpoint={id}</code><br>
-                        Step 1 → authenticate &nbsp;|&nbsp; Step 2 → open WebSocket
-                    </div>
-
-                    <!-- Step 1: Auth -->
-                    <div style="background:#1e1e1e;border:1px solid #3d3d3d;border-radius:6px;
-                                padding:12px;margin-bottom:12px;">
-                        <div style="font-size:0.75em;font-weight:600;color:#aaa;
-                                    text-transform:uppercase;margin-bottom:10px;letter-spacing:0.05em;">
-                            Step 1 — Authenticate (POST /auth)
+                    <!-- Step 1: Authenticate -->
+                    <section class="card">
+                        <div class="card-title">
+                            <span class="step-badge">1</span>
+                            Authenticate
                         </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-                            <div>
-                                <label style="font-size:0.75em;color:#888;display:block;margin-bottom:3px;">client_id</label>
-                                <input id="ma-client-id" type="text" value="XkWfgHHASGOQC9b95AkIxB"
-                                    style="width:100%;box-sizing:border-box;background:#111;border:1px solid #3d3d3d;
-                                           color:#fff;border-radius:4px;padding:6px 8px;font-size:0.8em;" />
-                            </div>
-                            <div>
-                                <label style="font-size:0.75em;color:#888;display:block;margin-bottom:3px;">client_secret</label>
-                                <input id="ma-client-secret" type="password" value="YZnKVUufg7N18Oej6gHHqNWc7CG5jQ6N"
-                                    style="width:100%;box-sizing:border-box;background:#111;border:1px solid #3d3d3d;
-                                           color:#fff;border-radius:4px;padding:6px 8px;font-size:0.8em;" />
-                            </div>
+                        <div class="form-field">
+                            <label>Client ID</label>
+                            <input type="text" id="ma-client-id"
+                                   value="XkWfgHHASGOQC9b95AkIxB" />
                         </div>
-                        <div style="display:flex;gap:8px;align-items:center;">
-                            <button id="ma-auth-btn"
-                                style="background:#2d8cff;color:#fff;border:none;border-radius:4px;
-                                       padding:7px 14px;cursor:pointer;font-size:0.85em;">
-                                Get Token
+                        <div class="form-field">
+                            <label>Client Secret</label>
+                            <input type="password" id="ma-client-secret"
+                                   value="YZnKVUufg7N18Oej6gHHqNWc7CG5jQ6N" />
+                        </div>
+                        <div class="card-actions">
+                            <button id="ma-auth-btn" class="btn btn-primary">
+                                <i class="fas fa-key"></i> Get Token
                             </button>
-                            <span id="ma-token-status" style="font-size:0.75em;color:#555;">No token yet</span>
+                            <span id="ma-token-status" class="status-text">No token</span>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- Step 2: Subscribe -->
-                    <div style="background:#1e1e1e;border:1px solid #3d3d3d;border-radius:6px;
-                                padding:12px;margin-bottom:12px;">
-                        <div style="font-size:0.75em;font-weight:600;color:#aaa;
-                                    text-transform:uppercase;margin-bottom:10px;letter-spacing:0.05em;">
-                            Step 2 — Subscribe (WebSocket)
-                        </div>
-                        <div style="margin-bottom:8px;">
-                            <label style="font-size:0.75em;color:#888;display:block;margin-bottom:3px;">
-                                Server (host only)
-                            </label>
-                            <input id="ma-host" type="text" value="ws://localhost:9095"
-                                style="width:100%;box-sizing:border-box;background:#111;border:1px solid #3d3d3d;
-                                       color:#fff;border-radius:4px;padding:6px 8px;font-size:0.8em;" />
-                        </div>
-                        <div style="margin-bottom:8px;">
-                            <label style="font-size:0.75em;color:#888;display:block;margin-bottom:3px;">Touchpoint</label>
-                            <select id="ma-touchpoint"
-                                style="width:100%;box-sizing:border-box;background:#111;border:1px solid #3d3d3d;
-                                       color:#fff;border-radius:4px;padding:6px 8px;font-size:0.8em;">
-                                <option value="">— loading touchpoints… —</option>
-                            </select>
-                        </div>
-                        <div style="font-size:0.72em;color:#555;margin-bottom:8px;font-family:monospace;"
-                             id="ma-ws-url-preview">ws://localhost:9095/subscribe?touchpoint=…</div>
-                        <div style="display:flex;gap:8px;align-items:center;">
-                            <button id="ma-connect-btn"
-                                style="flex:1;background:#3d3d3d;color:#aaa;border:none;border-radius:4px;
-                                       padding:8px 0;cursor:not-allowed;font-size:0.85em;" disabled>
-                                Connect
-                            </button>
-                            <button id="ma-disconnect-btn" disabled
-                                style="flex:1;background:#3d3d3d;color:#aaa;border:none;border-radius:4px;
-                                       padding:8px 0;cursor:not-allowed;font-size:0.85em;">
-                                Disconnect
-                            </button>
-                            <span id="ma-status-dot"
-                                style="width:10px;height:10px;border-radius:50%;background:#555;
-                                       flex-shrink:0;" title="Disconnected"></span>
-                        </div>
-                    </div>
-
-                    <!-- Calendar invite -->
-                    <div id="ma-invite-card" style="display:none;background:#1e2d40;border:1px solid #2d8cff;
-                         border-radius:6px;padding:12px;margin-bottom:12px;font-size:0.82em;line-height:1.6;">
-                        <div style="font-weight:600;color:#2d8cff;margin-bottom:6px;">
-                            📅 <span id="ma-invite-title"></span>
-                        </div>
-                        <div><span style="color:#aaa;">Start:</span> <span id="ma-invite-start"></span></div>
-                        <div><span style="color:#aaa;">End:</span>   <span id="ma-invite-end"></span></div>
-                        <div><span style="color:#aaa;">Organizer:</span> <span id="ma-invite-org"></span></div>
-                        <div><span style="color:#aaa;">Attendees:</span> <span id="ma-invite-att"></span></div>
-                        <div style="margin-top:6px;">
-                            <a id="ma-invite-url" href="#" target="_blank"
-                               style="color:#2d8cff;text-decoration:none;">🔗 Join Zoom Meeting</a>
-                        </div>
-                    </div>
-
-                    <!-- Session end badge -->
-                    <div id="ma-session-badge" style="display:none;font-size:0.75em;font-weight:600;
-                         text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;padding:4px 10px;
-                         border-radius:3px;background:#2a4a2a;color:#5fca5f;"></div>
-
-                    <!-- Transcript feed -->
-                    <div style="font-size:0.75em;color:#aaa;margin-bottom:6px;display:flex;justify-content:space-between;">
-                        <span>TRANSCRIPT</span>
-                        <span id="ma-line-count" style="color:#555;">0 lines</span>
-                    </div>
-                    <div id="ma-transcript"
-                        style="background:#111;border:1px solid #2a2a2a;border-radius:4px;padding:10px;
-                               height:280px;overflow-y:auto;font-size:0.82em;line-height:1.7;
-                               font-family:'SF Mono',Menlo,monospace;">
-                        <span style="color:#555;">Authenticate first, then connect…</span>
-                    </div>
-
-                    <!-- Raw log -->
-                    <div style="font-size:0.75em;color:#aaa;margin-top:10px;margin-bottom:6px;">RAW MESSAGES</div>
-                    <div id="ma-raw-log"
-                        style="background:#111;border:1px solid #2a2a2a;border-radius:4px;padding:10px;
-                               height:120px;overflow-y:auto;font-size:0.75em;line-height:1.5;
-                               font-family:'SF Mono',Menlo,monospace;color:#666;"></div>
-                </div>
-                <div id="mockws-container" class="logs-container" style="display: none;">
-
-                    <div style="margin-bottom:12px;">
-                        <label style="font-size:0.8em;color:#aaa;display:block;margin-bottom:4px;">Server URL</label>
-                        <input id="mws-url" type="text" value="ws://localhost:9095/signaling"
-                            style="width:100%;box-sizing:border-box;background:#1a1a1a;border:1px solid #3d3d3d;
-                                   color:#fff;border-radius:4px;padding:7px 10px;font-size:0.85em;" />
-                    </div>
-
-                    <div style="margin-bottom:12px;">
-                        <label style="font-size:0.8em;color:#aaa;display:block;margin-bottom:4px;">Meeting</label>
-                        <select id="mws-meeting"
-                            style="width:100%;box-sizing:border-box;background:#1a1a1a;border:1px solid #3d3d3d;
-                                   color:#fff;border-radius:4px;padding:7px 10px;font-size:0.85em;">
-                            <option value="">— loading meetings… —</option>
-                        </select>
-                    </div>
-
-                    <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;">
-                        <button id="mws-connect-btn"
-                            style="flex:1;background:#2d8cff;color:#fff;border:none;border-radius:4px;
-                                   padding:8px 0;cursor:pointer;font-size:0.9em;">
+                    <!-- Step 2: Connect -->
+                    <section class="card">
+                        <div class="card-title">
+                            <span class="step-badge">2</span>
                             Connect
-                        </button>
-                        <button id="mws-disconnect-btn" disabled
-                            style="flex:1;background:#3d3d3d;color:#aaa;border:none;border-radius:4px;
-                                   padding:8px 0;cursor:not-allowed;font-size:0.9em;">
-                            Disconnect
-                        </button>
-                        <span id="mws-status-dot"
-                            style="width:10px;height:10px;border-radius:50%;background:#555;
-                                   flex-shrink:0;margin-left:4px;" title="Disconnected"></span>
-                    </div>
-
-                    <!-- Calendar invite card -->
-                    <div id="mws-invite-card" style="display:none;background:#1e2d40;border:1px solid #2d8cff;
-                         border-radius:6px;padding:12px;margin-bottom:14px;font-size:0.82em;line-height:1.6;">
-                        <div style="font-weight:600;color:#2d8cff;margin-bottom:6px;">
-                            📅 <span id="mws-invite-title"></span>
                         </div>
-                        <div><span style="color:#aaa;">Start:</span> <span id="mws-invite-start"></span></div>
-                        <div><span style="color:#aaa;">End:</span>   <span id="mws-invite-end"></span></div>
-                        <div><span style="color:#aaa;">Organizer:</span> <span id="mws-invite-org"></span></div>
-                        <div><span style="color:#aaa;">Attendees:</span> <span id="mws-invite-att"></span></div>
-                        <div style="margin-top:6px;">
-                            <a id="mws-invite-url" href="#" target="_blank"
-                               style="color:#2d8cff;text-decoration:none;font-size:0.95em;">🔗 Join Zoom Meeting</a>
+                        <div class="form-field">
+                            <label>Server URL</label>
+                            <input type="text" id="ma-server-url"
+                                   placeholder="ws://localhost:9092" />
                         </div>
-                    </div>
+                        <div class="card-actions">
+                            <button id="ma-connect-btn" class="btn btn-primary" disabled>
+                                <i class="fas fa-plug"></i> Connect
+                            </button>
+                            <button id="ma-disconnect-btn" class="btn btn-secondary" disabled>
+                                <i class="fas fa-unlink"></i> Disconnect
+                            </button>
+                        </div>
+                    </section>
 
-                    <!-- Session state badge -->
-                    <div id="mws-session-badge" style="display:none;font-size:0.75em;font-weight:600;
-                         text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;padding:4px 10px;
-                         border-radius:3px;background:#2a4a2a;color:#5fca5f;">
-                        STARTED
-                    </div>
+                    <!-- Session stats -->
+                    <section class="card">
+                        <div class="card-title">Session</div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="stat-events">0</div>
+                                <div class="stat-label">Events</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="stat-transcript">0</div>
+                                <div class="stat-label">Transcript Lines</div>
+                            </div>
+                        </div>
+                    </section>
 
-                    <!-- Transcript feed -->
-                    <div style="font-size:0.75em;color:#aaa;margin-bottom:6px;display:flex;justify-content:space-between;">
-                        <span>TRANSCRIPT</span>
-                        <span id="mws-line-count" style="color:#555;">0 lines</span>
-                    </div>
-                    <div id="mws-transcript"
-                        style="background:#111;border:1px solid #2a2a2a;border-radius:4px;padding:10px;
-                               height:320px;overflow-y:auto;font-size:0.82em;line-height:1.7;
-                               font-family:'SF Mono',Menlo,monospace;">
-                        <span style="color:#555;">Waiting for connection…</span>
-                    </div>
+                </aside>
 
-                    <!-- Raw message log -->
-                    <div style="font-size:0.75em;color:#aaa;margin-top:12px;margin-bottom:6px;">RAW MESSAGES</div>
-                    <div id="mws-raw-log"
-                        style="background:#111;border:1px solid #2a2a2a;border-radius:4px;padding:10px;
-                               height:140px;overflow-y:auto;font-size:0.75em;line-height:1.5;
-                               font-family:'SF Mono',Menlo,monospace;color:#666;">
-                    </div>
-                </div>
-            </div>
-        </div>
+                <!-- RIGHT: Live feed -->
+                <main class="feed-panel">
 
-        <!-- Configuration -->
-        <script src="/js/config.js"></script>
-        
-        <!-- API Handler -->
-        <script src="/js/api.js"></script>
-        
-        <!-- Core functionality -->
-        <script src="/js/mediaHandler.js"></script>
-        <script src="/js/webSocket.js"></script>
-        
-        <!-- UI and Controls -->
-        <script src="/js/uiController.js"></script>
+                    <!-- Meeting events -->
+                    <section class="feed-section">
+                        <div class="feed-section-header">
+                            <span class="feed-section-title">
+                                <i class="fas fa-calendar-alt"></i> Meeting Events
+                            </span>
+                            <span id="events-status-badge" class="badge badge-idle">Idle</span>
+                        </div>
+                        <div class="feed-scroll" id="ma-events-feed">
+                            <span class="feed-placeholder">Connect to start receiving meeting events…</span>
+                        </div>
+                    </section>
 
-        <!-- Audio Processing -->
-        <script src="/js/audio-processor.js"></script>
+                    <!-- Transcript -->
+                    <section class="feed-section">
+                        <div class="feed-section-header">
+                            <span class="feed-section-title">
+                                <i class="fas fa-comment-dots"></i> Transcript
+                            </span>
+                            <span id="transcript-status-badge" class="badge badge-idle">Idle</span>
+                        </div>
+                        <div class="feed-scroll" id="ma-transcript-feed">
+                            <span class="feed-placeholder">Transcript stream connects automatically on rtms.started…</span>
+                        </div>
+                    </section>
 
-        <script>
-            // Handle tabs
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    // Update active tab
-                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
+                    <!-- Raw messages -->
+                    <section class="feed-section feed-section--raw">
+                        <div class="feed-section-header">
+                            <span class="feed-section-title">
+                                <i class="fas fa-code"></i> Raw Messages
+                            </span>
+                            <button class="btn-ghost" id="ma-clear-raw">Clear</button>
+                        </div>
+                        <div class="feed-scroll feed-scroll--sm" id="ma-raw-feed"></div>
+                    </section>
 
-                    // Show/hide containers
-                    const tabName = button.dataset.tab;
-                    document.getElementById('transcripts-container').style.display =
-                        tabName === 'transcripts' ? 'block' : 'none';
-                    document.getElementById('logs-container').style.display =
-                        tabName === 'logs' ? 'block' : 'none';
-                    document.getElementById('mockws-container').style.display =
-                        tabName === 'mockws' ? 'block' : 'none';
-                    document.getElementById('meetingassist-container').style.display =
-                        tabName === 'meetingassist' ? 'block' : 'none';
+                </main>
 
-                    // Load data on first open
-                    if (tabName === 'mockws' && !window._mwsMeetingsLoaded) {
-                        loadMockMeetings();
-                    }
-                    if (tabName === 'meetingassist' && !window._maTouchpointsLoaded) {
-                        window.loadTouchpoints && window.loadTouchpoints();
-                    }
-                });
-            });
+            </div><!-- /.app-body -->
+        </div><!-- /.app -->
 
-            // Function to add transcript
-            function addTranscript(text) {
-                const transcriptDiv = document.getElementById('transcript');
-                const entry = document.createElement('div');
-                entry.className = 'transcript-entry';
-                
-                const timestamp = document.createElement('div');
-                timestamp.className = 'transcript-timestamp';
-                timestamp.textContent = new Date().toLocaleTimeString();
-                
-                const content = document.createElement('div');
-                content.textContent = text;
-                
-                entry.appendChild(timestamp);
-                entry.appendChild(content);
-                transcriptDiv.appendChild(entry);
-            }
-        </script>
-
-        <!-- ── Mock Data WS tester logic ─────────────────────────── -->
-        <script>
-        (function () {
-            const HTTP_BASE  = 'http://localhost:9095';
-            let   _ws        = null;
-            let   _lineCount = 0;
-
-            // ── Populate meeting dropdown ──────────────────────────────────
-            window._mwsMeetingsLoaded = false;
-
-            window.loadMockMeetings = function loadMockMeetings() {
-                fetch(HTTP_BASE + '/meetings')
-                    .then(r => r.json())
-                    .then(data => {
-                        const sel = document.getElementById('mws-meeting');
-                        sel.innerHTML = '';
-                        data.meetings.forEach(m => {
-                            const opt = document.createElement('option');
-                            opt.value = m.meeting_uuid;
-                            opt.textContent = m.meeting_topic + ' — ' + m.meeting_uuid.slice(0, 10) + '…';
-                            sel.appendChild(opt);
-                        });
-                        window._mwsMeetingsLoaded = true;
-                        rawLog('ℹ Loaded ' + data.meetings.length + ' meetings from ' + HTTP_BASE);
-                    })
-                    .catch(() => {
-                        rawLog('⚠ Could not reach ' + HTTP_BASE + '/meetings — is the server running?');
-                    });
-            }
-
-            // ── Status dot helpers ─────────────────────────────────────────
-            function setStatus(state) {
-                const dot = document.getElementById('mws-status-dot');
-                const colors = { connected: '#5fca5f', connecting: '#f0a500', disconnected: '#555', error: '#e05252' };
-                dot.style.background = colors[state] || '#555';
-                dot.title = state.charAt(0).toUpperCase() + state.slice(1);
-            }
-
-            // ── Raw message log ────────────────────────────────────────────
-            function rawLog(line) {
-                const el  = document.getElementById('mws-raw-log');
-                const ts  = new Date().toLocaleTimeString();
-                el.innerHTML += `<div style="color:#666;">[${ts}] ${escHtml(line)}</div>`;
-                el.scrollTop = el.scrollHeight;
-            }
-
-            function escHtml(s) {
-                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            }
-
-            // ── Transcript feed ────────────────────────────────────────────
-            function appendTranscriptLine(name, text) {
-                const feed = document.getElementById('mws-transcript');
-                // Clear placeholder on first line
-                if (_lineCount === 0) feed.innerHTML = '';
-                _lineCount++;
-
-                const ts   = new Date().toLocaleTimeString();
-                const line = document.createElement('div');
-                line.style.cssText = 'margin-bottom:4px;';
-                line.innerHTML =
-                    `<span style="color:#555;">[${escHtml(ts)}]</span> ` +
-                    `<span style="color:#2d8cff;font-weight:600;">${escHtml(name)}:</span> ` +
-                    `<span style="color:#ddd;">${escHtml(text)}</span>`;
-                feed.appendChild(line);
-                feed.scrollTop = feed.scrollHeight;
-
-                document.getElementById('mws-line-count').textContent = _lineCount + ' line' + (_lineCount !== 1 ? 's' : '');
-            }
-
-            // ── Calendar invite card ───────────────────────────────────────
-            function showInvite(inv) {
-                document.getElementById('mws-invite-title').textContent = inv.title || '';
-                document.getElementById('mws-invite-start').textContent = inv.start_time || '';
-                document.getElementById('mws-invite-end').textContent   = inv.end_time   || '';
-                document.getElementById('mws-invite-org').textContent   =
-                    (inv.organizer ? inv.organizer.name + ' <' + inv.organizer.email + '>' : '');
-                document.getElementById('mws-invite-att').textContent   =
-                    (inv.attendees || []).map(a => a.name).join(', ');
-                const urlEl = document.getElementById('mws-invite-url');
-                if (inv.conference && inv.conference.join_url) {
-                    urlEl.href = inv.conference.join_url;
-                    urlEl.style.display = 'inline';
-                } else {
-                    urlEl.style.display = 'none';
-                }
-                document.getElementById('mws-invite-card').style.display = 'block';
-            }
-
-            // ── Session badge ──────────────────────────────────────────────
-            const STATE_LABEL = { 1:'STARTED', 2:'PAUSED', 3:'RESUMED', 4:'STOPPED' };
-            const STATE_COLOR  = {
-                1: { bg:'#2a4a2a', fg:'#5fca5f' },
-                2: { bg:'#4a3e1a', fg:'#f0c040' },
-                3: { bg:'#2a4a2a', fg:'#5fca5f' },
-                4: { bg:'#3a1a1a', fg:'#e05252' },
-            };
-            function showSessionBadge(state) {
-                const badge = document.getElementById('mws-session-badge');
-                const c     = STATE_COLOR[state] || { bg:'#333', fg:'#aaa' };
-                badge.textContent = STATE_LABEL[state] || 'UNKNOWN';
-                badge.style.background = c.bg;
-                badge.style.color      = c.fg;
-                badge.style.display    = 'inline-block';
-            }
-
-            // ── Connect ────────────────────────────────────────────────────
-            function connectMockWS() {
-                const url      = document.getElementById('mws-url').value.trim();
-                const uuid     = document.getElementById('mws-meeting').value;
-
-                if (!url || !uuid) { rawLog('⚠ Select a meeting and provide a server URL.'); return; }
-
-                // Reset UI
-                _lineCount = 0;
-                document.getElementById('mws-transcript').innerHTML =
-                    '<span style="color:#555;">Connecting…</span>';
-                document.getElementById('mws-line-count').textContent = '0 lines';
-                document.getElementById('mws-invite-card').style.display = 'none';
-                document.getElementById('mws-session-badge').style.display = 'none';
-                document.getElementById('mws-raw-log').innerHTML = '';
-
-                setStatus('connecting');
-                rawLog('→ Connecting to ' + url);
-
-                _ws = new WebSocket(url);
-
-                _ws.onopen = () => {
-                    setStatus('connected');
-                    rawLog('✓ Connected — sending handshake for ' + uuid);
-
-                    _ws.send(JSON.stringify({
-                        msg_type:       1,
-                        meeting_uuid:   uuid,
-                        rtms_stream_id: 'rtms_mock_ui_001',
-                        signature:      'mock-ui-' + Date.now(),
-                    }));
-
-                    document.getElementById('mws-connect-btn').disabled    = true;
-                    document.getElementById('mws-connect-btn').style.background = '#555';
-                    document.getElementById('mws-connect-btn').style.cursor = 'not-allowed';
-                    document.getElementById('mws-disconnect-btn').disabled  = false;
-                    document.getElementById('mws-disconnect-btn').style.background = '#c0392b';
-                    document.getElementById('mws-disconnect-btn').style.color      = '#fff';
-                    document.getElementById('mws-disconnect-btn').style.cursor     = 'pointer';
-                };
-
-                _ws.onmessage = (evt) => {
-                    let msg;
-                    try { msg = JSON.parse(evt.data); } catch { return; }
-
-                    rawLog('← msg_type=' + msg.msg_type + (msg.session_id ? ' session=' + msg.session_id : ''));
-
-                    switch (msg.msg_type) {
-                        case 2: // SIGNALING_HAND_SHAKE_RESP
-                            if (msg.status_code === 200) {
-                                rawLog('✓ Handshake OK — subscribing…');
-                                _ws.send(JSON.stringify({
-                                    msg_type:   5,
-                                    session_id: msg.session_id,
-                                    event_type: ['transcript', 'chat'],
-                                }));
-                            } else {
-                                rawLog('✗ Handshake failed: ' + msg.status_message);
-                                disconnectMockWS();
-                            }
-                            break;
-
-                        case 9: // SESSION_STATE_UPDATE
-                            showSessionBadge(msg.state);
-                            if (msg.state === 4) {
-                                rawLog('■ Session STOPPED — ' + (msg.stop_reason || ''));
-                                disconnectMockWS();
-                            }
-                            break;
-
-                        case 50: // CALENDAR_INVITE (custom)
-                            rawLog('📅 Calendar invite received: ' + (msg.content && msg.content.title));
-                            showInvite(msg.content);
-                            break;
-
-                        case 17: // MEDIA_DATA_TRANSCRIPT
-                            appendTranscriptLine(
-                                msg.content.display_name || ('User ' + msg.content.user_id),
-                                msg.content.data
-                            );
-                            break;
-
-                        case 12: // KEEP_ALIVE_REQ
-                            _ws.send(JSON.stringify({ msg_type: 13, session_id: msg.session_id, timestamp: Date.now() }));
-                            break;
-                    }
-                };
-
-                _ws.onerror = () => {
-                    setStatus('error');
-                    rawLog('✗ WebSocket error');
-                };
-
-                _ws.onclose = () => {
-                    setStatus('disconnected');
-                    rawLog('— Connection closed');
-                    resetConnectBtn();
-                };
-            }
-
-            // ── Disconnect ─────────────────────────────────────────────────
-            function disconnectMockWS() {
-                if (_ws) { _ws.close(); _ws = null; }
-                resetConnectBtn();
-            }
-
-            function resetConnectBtn() {
-                const c = document.getElementById('mws-connect-btn');
-                c.disabled = false; c.style.background = '#2d8cff'; c.style.cursor = 'pointer';
-                const d = document.getElementById('mws-disconnect-btn');
-                d.disabled = true; d.style.background = '#3d3d3d'; d.style.color = '#aaa'; d.style.cursor = 'not-allowed';
-            }
-
-            // ── Wire up buttons ────────────────────────────────────────────
-            document.getElementById('mws-connect-btn').addEventListener('click', connectMockWS);
-            document.getElementById('mws-disconnect-btn').addEventListener('click', disconnectMockWS);
-        })();
-        </script>
-        <!-- ── Meeting Assistant WS tester logic ─────────────────── -->
-        <script>
-        (function () {
-            const HTTP_BASE = 'http://localhost:9095';
-            let _ws        = null;
-            let _token     = null;
-            let _maLines   = 0;
-
-            window._maTouchpointsLoaded = false;
-
-            // ── Load touchpoints ───────────────────────────────────────────
-            window.loadTouchpoints = function () {
-                fetch(HTTP_BASE + '/touchpoints')
-                    .then(r => r.json())
-                    .then(data => {
-                        const sel = document.getElementById('ma-touchpoint');
-                        sel.innerHTML = '';
-                        data.touchpoints.forEach(tp => {
-                            const opt = document.createElement('option');
-                            opt.value = tp.touchpoint_id;
-                            opt.textContent = tp.label + '  (' + tp.touchpoint_id + ')';
-                            sel.appendChild(opt);
-                        });
-                        window._maTouchpointsLoaded = true;
-                        updateUrlPreview();
-                        maRawLog('ℹ Loaded ' + data.touchpoints.length + ' touchpoints');
-                    })
-                    .catch(() => maRawLog('⚠ Could not reach ' + HTTP_BASE + ' — is the server running?'));
-            };
-
-            // ── URL preview ────────────────────────────────────────────────
-            function updateUrlPreview() {
-                const host = document.getElementById('ma-host').value.trim();
-                const tp   = document.getElementById('ma-touchpoint').value;
-                document.getElementById('ma-ws-url-preview').textContent =
-                    (host || 'ws://…') + '/subscribe?touchpoint=' + (tp || '…');
-            }
-            document.getElementById('ma-host').addEventListener('input', updateUrlPreview);
-            document.getElementById('ma-touchpoint').addEventListener('change', updateUrlPreview);
-
-            // ── Helpers ────────────────────────────────────────────────────
-            function maRawLog(line) {
-                const el = document.getElementById('ma-raw-log');
-                const ts = new Date().toLocaleTimeString();
-                el.innerHTML += `<div>[${ts}] ${escHtml(line)}</div>`;
-                el.scrollTop = el.scrollHeight;
-            }
-            function escHtml(s) {
-                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            }
-            function maSetStatus(state) {
-                const dot    = document.getElementById('ma-status-dot');
-                const colors = { connected:'#5fca5f', connecting:'#f0a500', disconnected:'#555', error:'#e05252' };
-                dot.style.background = colors[state] || '#555';
-                dot.title = state;
-            }
-            function maAppendTranscript(name, text) {
-                const feed = document.getElementById('ma-transcript');
-                if (_maLines === 0) feed.innerHTML = '';
-                _maLines++;
-                const ts   = new Date().toLocaleTimeString();
-                const line = document.createElement('div');
-                line.style.marginBottom = '4px';
-                line.innerHTML =
-                    `<span style="color:#555;">[${escHtml(ts)}]</span> ` +
-                    `<span style="color:#2d8cff;font-weight:600;">${escHtml(name)}:</span> ` +
-                    `<span style="color:#ddd;">${escHtml(text)}</span>`;
-                feed.appendChild(line);
-                feed.scrollTop = feed.scrollHeight;
-                document.getElementById('ma-line-count').textContent =
-                    _maLines + ' line' + (_maLines !== 1 ? 's' : '');
-            }
-            function maShowInvite(inv) {
-                document.getElementById('ma-invite-title').textContent = inv.title || '';
-                document.getElementById('ma-invite-start').textContent = inv.start_time || '';
-                document.getElementById('ma-invite-end').textContent   = inv.end_time   || '';
-                document.getElementById('ma-invite-org').textContent   =
-                    inv.organizer ? inv.organizer.name + ' <' + inv.organizer.email + '>' : '';
-                document.getElementById('ma-invite-att').textContent   =
-                    (inv.attendees || []).map(a => a.name).join(', ');
-                const urlEl = document.getElementById('ma-invite-url');
-                if (inv.conference && inv.conference.join_url) {
-                    urlEl.href = inv.conference.join_url;
-                    urlEl.style.display = 'inline';
-                } else { urlEl.style.display = 'none'; }
-                document.getElementById('ma-invite-card').style.display = 'block';
-            }
-            function maShowBadge(text, bg, fg) {
-                const b = document.getElementById('ma-session-badge');
-                b.textContent = text; b.style.background = bg; b.style.color = fg;
-                b.style.display = 'inline-block';
-            }
-
-            // ── Step 1: Auth ───────────────────────────────────────────────
-            document.getElementById('ma-auth-btn').addEventListener('click', () => {
-                const clientId     = document.getElementById('ma-client-id').value.trim();
-                const clientSecret = document.getElementById('ma-client-secret').value.trim();
-                if (!clientId || !clientSecret) {
-                    document.getElementById('ma-token-status').textContent = '⚠ Fill in both fields';
-                    return;
-                }
-                document.getElementById('ma-token-status').textContent = 'Requesting…';
-                maRawLog('→ POST /auth  client_id=' + clientId);
-
-                fetch(HTTP_BASE + '/auth', {
-                    method:  'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body:    JSON.stringify({ client_id: clientId, client_secret: clientSecret }),
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if (!data.access_token) throw new Error(data.error || 'No token returned');
-                    _token = 'Bearer ' + data.access_token;
-                    const preview = data.access_token.slice(0, 12) + '…';
-                    document.getElementById('ma-token-status').textContent =
-                        '✓ Token: ' + preview + '  (expires in ' + data.expires_in + 's)';
-                    document.getElementById('ma-token-status').style.color = '#5fca5f';
-                    maRawLog('✓ Token issued: ' + preview);
-                    // Enable Connect button now that we have a token
-                    const btn = document.getElementById('ma-connect-btn');
-                    btn.disabled = false;
-                    btn.style.background = '#2d8cff';
-                    btn.style.color      = '#fff';
-                    btn.style.cursor     = 'pointer';
-                })
-                .catch(err => {
-                    document.getElementById('ma-token-status').textContent = '✗ ' + err.message;
-                    document.getElementById('ma-token-status').style.color = '#e05252';
-                    maRawLog('✗ Auth failed: ' + err.message);
-                });
-            });
-
-            // ── Step 2: Connect ────────────────────────────────────────────
-            document.getElementById('ma-connect-btn').addEventListener('click', () => {
-                if (!_token) { maRawLog('⚠ Get a token first'); return; }
-                const host = document.getElementById('ma-host').value.trim();
-                const tp   = document.getElementById('ma-touchpoint').value;
-                if (!tp) { maRawLog('⚠ Select a touchpoint'); return; }
-
-                const url = host + '/subscribe?touchpoint=' + encodeURIComponent(tp);
-
-                // Reset
-                _maLines = 0;
-                document.getElementById('ma-transcript').innerHTML =
-                    '<span style="color:#555;">Connecting…</span>';
-                document.getElementById('ma-line-count').textContent = '0 lines';
-                document.getElementById('ma-invite-card').style.display  = 'none';
-                document.getElementById('ma-session-badge').style.display = 'none';
-                document.getElementById('ma-raw-log').innerHTML = '';
-
-                maSetStatus('connecting');
-                maRawLog('→ WS ' + url);
-
-                _ws = new WebSocket(url);
-
-                _ws.onopen = () => {
-                    maSetStatus('connected');
-                    maRawLog('✓ Connected — sending auth');
-                    _ws.send(JSON.stringify({ type: 'auth', token: _token }));
-                    setConnectState(true);
-                };
-
-                _ws.onmessage = (evt) => {
-                    let msg;
-                    try { msg = JSON.parse(evt.data); } catch { return; }
-                    maRawLog('← type=' + msg.type);
-
-                    switch (msg.type) {
-                        case 'auth_ok':
-                            maRawLog('✓ Authenticated — session=' + msg.session_id);
-                            maShowBadge('CONNECTED', '#2a4a2a', '#5fca5f');
-                            break;
-                        case 'auth_err':
-                            maRawLog('✗ Auth rejected: ' + msg.message);
-                            maShowBadge('AUTH FAILED', '#3a1a1a', '#e05252');
-                            disconnectMA();
-                            break;
-                        case 'invite':
-                            maShowInvite(msg);
-                            break;
-                        case 'transcript':
-                            maAppendTranscript(msg.display_name || 'User ' + msg.user_id, msg.text);
-                            break;
-                        case 'session_end':
-                            maRawLog('■ Session ended: ' + msg.reason);
-                            maShowBadge('SESSION ENDED', '#3a1a1a', '#e05252');
-                            disconnectMA();
-                            break;
-                        case 'ping':
-                            _ws.send(JSON.stringify({ type: 'pong', timestamp: Date.now() }));
-                            break;
-                    }
-                };
-
-                _ws.onerror = () => { maSetStatus('error'); maRawLog('✗ WebSocket error'); };
-                _ws.onclose = () => { maSetStatus('disconnected'); maRawLog('— Closed'); setConnectState(false); };
-            });
-
-            document.getElementById('ma-disconnect-btn').addEventListener('click', disconnectMA);
-
-            function disconnectMA() {
-                if (_ws) { _ws.close(); _ws = null; }
-                setConnectState(false);
-            }
-
-            function setConnectState(connected) {
-                const c = document.getElementById('ma-connect-btn');
-                const d = document.getElementById('ma-disconnect-btn');
-                if (connected) {
-                    c.disabled = true;  c.style.background = '#555';    c.style.cursor = 'not-allowed';
-                    d.disabled = false; d.style.background = '#c0392b'; d.style.color  = '#fff'; d.style.cursor = 'pointer';
-                } else {
-                    // Re-enable connect only if we still have a token
-                    c.disabled = !_token;
-                    c.style.background = _token ? '#2d8cff' : '#3d3d3d';
-                    c.style.color      = _token ? '#fff'    : '#aaa';
-                    c.style.cursor     = _token ? 'pointer' : 'not-allowed';
-                    d.disabled = true; d.style.background = '#3d3d3d'; d.style.color = '#aaa'; d.style.cursor = 'not-allowed';
-                }
-            }
-        })();
-        </script>
+        <!-- Modules -->
+        <script src="/js/meetingAssistant.js"></script>
     </body>
 </html>

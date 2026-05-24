@@ -5,6 +5,7 @@ const CONFIG = require('../config/serverConfig');
 const WebSocketUtils = require('../utils/wsUtils');
 const path = require("path");
 const webhookRouter = require("../handlers/webhookHandler");
+const zoomApiRouter = require("../handlers/zoomApiHandler");
 const multer = require('multer');
 
 class ServerSetup {
@@ -34,8 +35,11 @@ class ServerSetup {
             }
         });
 
-        // Add webhook routes
+        // Existing webhook routes (RTMS control UI)
         app.use("/api", webhookRouter);
+
+        // Zoom API mock routes (Meeting Assistant: oauth + RTMS activation)
+        app.use("/", zoomApiRouter);
 
         server.listen(CONFIG.HANDSHAKE_PORT, CONFIG.HOST, () => {
             console.log(`Handshake server running on ${CONFIG.HOST}:${CONFIG.HANDSHAKE_PORT}`);
